@@ -14,8 +14,8 @@ import retrofit2.Response
 
 class MainViewModel: ViewModel() {
 
-    private val _users = MutableLiveData<List<UserItem>>()
-    val users: LiveData<List<UserItem>> = _users
+    private val _users = MutableLiveData<SearchResponse>()
+    val users: LiveData<SearchResponse> = _users
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -37,7 +37,7 @@ class MainViewModel: ViewModel() {
             ) {
                 _isLoading.value = false
                 if (response.isSuccessful) {
-                    _users.value = response.body()?.items!!
+                    _users.value = response.body()
                 }
                 else {
                     _errorMsg.value = Event("Server Error, ${response.message()}")
@@ -46,7 +46,7 @@ class MainViewModel: ViewModel() {
             }
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
                 _isLoading.value = false
-                _errorMsg.value = Event("Error, cek koneksi anda!")
+                _errorMsg.value = Event("Error, check your connection!")
                 Log.d(TAG, "onFailure: ${t.message}")
             }
         })
