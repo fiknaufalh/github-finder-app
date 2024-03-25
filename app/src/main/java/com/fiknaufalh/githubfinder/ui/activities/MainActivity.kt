@@ -1,7 +1,8 @@
-package com.fiknaufalh.githubfinder.activities
+package com.fiknaufalh.githubfinder.ui.activities
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -14,20 +15,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fiknaufalh.githubfinder.R
 import com.fiknaufalh.githubfinder.adapters.UserAdapter
-import com.fiknaufalh.githubfinder.adapters.viewmodels.MainViewModel
+import com.fiknaufalh.githubfinder.viewmodels.MainViewModel
 import com.fiknaufalh.githubfinder.data.response.SearchResponse
-import com.fiknaufalh.githubfinder.data.response.UserItem
 import com.fiknaufalh.githubfinder.databinding.ActivityMainBinding
+import com.fiknaufalh.githubfinder.helpers.Event
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainViewModel: MainViewModel
     private var isSearched = false
-
-    companion object {
-        private const val TAG = "MainActivity"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,19 +44,31 @@ class MainActivity : AppCompatActivity() {
         val searchView = binding.searchUser
         initializeSearchView(searchManager, searchView)
 
-        mainViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[MainViewModel::class.java]
+        mainViewModel = ViewModelProvider(this,
+            ViewModelProvider.NewInstanceFactory())[MainViewModel::class.java]
 
-        mainViewModel.users.observe(this) { users ->
-            setUserListData(users)
+        mainViewModel.users.observe(this) {
+            users -> setUserListData(users)
         }
 
-        mainViewModel.isLoading.observe(this) { isLoading ->
-            showLoading(isLoading)
+        mainViewModel.isLoading.observe(this) {
+            isLoading -> showLoading(isLoading)
+        }
+
+        mainViewModel.errorMsg.observe(this) {
+            msg -> setErrorMessage(msg)
         }
     }
 
     private fun setUserListData(users: SearchResponse) {
-        val adapter = UserAdapter(users.items!!)
+        val adapter = UserAdapter(
+            users.items!!,
+            onClickCard = {
+                val intent = Intent(this@MainActivity, DetailActivity::class.java)
+                intent.putExtra(resources.getString(R.string.passing_query), it.login)
+                startActivity(intent)
+            })
+
         binding.rvUsers.adapter = adapter
         if (isSearched) {
             binding.tvTotalResult.text = resources.getString(R.string.search_result_text, users.totalCount, users.items.size)
@@ -67,6 +77,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun setErrorMessage(msg: Event<String>) {
+        msg.getContentIfNotHandled()?.let {
+            val snackBar = Snackbar.make(
+                window.decorView.rootView,
+                it,
+                Snackbar.LENGTH_SHORT
+            )
+            snackBar.anchorView = binding.botView
+            snackBar.show()
+        }
     }
 
     private fun initializeSearchView(searchManager: SearchManager, searchView: SearchView) {

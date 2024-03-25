@@ -1,13 +1,12 @@
-package com.fiknaufalh.githubfinder.adapters.viewmodels
+package com.fiknaufalh.githubfinder.viewmodels
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.fiknaufalh.githubfinder.data.response.SearchResponse
-import com.fiknaufalh.githubfinder.data.response.UserItem
 import com.fiknaufalh.githubfinder.data.retrofit.ApiConfig
 import com.fiknaufalh.githubfinder.helpers.Event
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,7 +40,7 @@ class MainViewModel: ViewModel() {
                 }
                 else {
                     _errorMsg.value = Event("Server Error, ${response.message()}")
-                    Log.d(TAG, "onResponseFail: ${response.message()}")
+                    Log.d(TAG, "onFailResponse: ${response.message()}")
                 }
             }
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {

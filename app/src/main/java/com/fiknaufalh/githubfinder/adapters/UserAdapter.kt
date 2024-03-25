@@ -9,8 +9,10 @@ import com.fiknaufalh.githubfinder.R
 import com.fiknaufalh.githubfinder.data.response.UserItem
 import com.fiknaufalh.githubfinder.databinding.ItemUserSearchBinding
 
-class UserAdapter(private val listUser: List<UserItem>):
-    RecyclerView.Adapter<UserAdapter.MyViewHolder>() {
+class UserAdapter(
+        private val listUser: List<UserItem>,
+        private val onClickCard: (UserItem) -> Unit
+    ): RecyclerView.Adapter<UserAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserAdapter.MyViewHolder {
         val binding = ItemUserSearchBinding.
@@ -25,8 +27,13 @@ class UserAdapter(private val listUser: List<UserItem>):
         holder.bind(user)
     }
 
-    class MyViewHolder(val binding: ItemUserSearchBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class MyViewHolder(val binding: ItemUserSearchBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(user: UserItem) {
+
+            itemView.setOnClickListener {
+                onClickCard(user)
+            }
+
             binding.userName.text = user.login
             Glide.with(binding.root)
                 .load(user.avatarUrl)
