@@ -24,4 +24,5 @@
     <string name="item_email">user@example.com</string>
     <string name="item_since">Member since 1st January 1970</string>
     <string name="splash_description">Welcome to GitHub Finder!</string>
+    <string name="tab_text">%d %s</string>
 </resources>

@@ -48,7 +48,7 @@ class DetailActivity : AppCompatActivity() {
                     detailViewModel.userDetail.value?.following
                 }
 
-                tab.text = "$count $currentTab"
+                tab.text = resources.getString(R.string.tab_text, count, currentTab)
             }.attach()
             supportActionBar?.elevation = 0f
         }
@@ -72,26 +72,28 @@ class DetailActivity : AppCompatActivity() {
         val dateStr = detail.createdAt
         val convertedDate = DateConverter().formatDate(dateStr!!)
 
-        binding.tvUserName.text = detail.login
-        binding.tvFullName.text = if (detail.name.isNullOrEmpty()) resources.getString(R.string.undefinedName) else detail.name
-        binding.tvMemberSince.text = resources.getString(R.string.member_since, convertedDate)
-        if (detail.email != null) {
-            binding.tvEmail.text = detail.email.toString()
-        } else {
-            binding.tvEmail.visibility = View.GONE
+        with(binding) {
+            tvUserName.text = detail.login
+            tvFullName.text = if (detail.name.isNullOrEmpty()) resources.getString(R.string.undefinedName) else detail.name
+            tvMemberSince.text = resources.getString(R.string.member_since, convertedDate)
+            if (detail.email != null) {
+                tvEmail.text = detail.email.toString()
+            } else {
+                tvEmail.visibility = View.GONE
+            }
+            ivUserProfile.borderColor = resources.getColor(R.color.white)
+            ivUserProfile.borderWidth = 2
+
+            ivUserProfile.setOnClickListener {
+                val gitHubIntent = Intent(Intent.ACTION_VIEW, Uri.parse(detail.htmlUrl))
+                startActivity(gitHubIntent)
+            }
         }
-        binding.ivUserProfile.borderColor = resources.getColor(R.color.white)
-        binding.ivUserProfile.borderWidth = 2
 
         Glide.with(this)
             .load(detail.avatarUrl)
             .placeholder(R.drawable.account_circle)
             .into(binding.ivUserProfile)
-
-        binding.ivUserProfile.setOnClickListener {
-            val gitHubIntent = Intent(Intent.ACTION_VIEW, Uri.parse(detail.htmlUrl))
-            startActivity(gitHubIntent)
-        }
     }
 
     private fun showLoading(state: Boolean) {
