@@ -1,15 +1,11 @@
 <resources>
     <string name="app_name">GitHub Finder</string>
-    <string name="search">Search</string>
     <string name="app_title">GitHub Finder</string>
     <string name="item_user">Item User</string>
-    <string name="search_bar_hint">Search User</string>
     <string name="search_me_text">Find me! @fiknaufalh</string>
     <string name="search_result_text">%d Results, Showing %d Results</string>
     <string name="search_placeholder">Find username</string>
-    <string name="header_desc">Find a GitHub User!</string>
     <string name="back">Back</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="welcome_text">Welcome!</string>
     <string name="passing_query">q</string>
     <string name="tab_followers">Followers</string>

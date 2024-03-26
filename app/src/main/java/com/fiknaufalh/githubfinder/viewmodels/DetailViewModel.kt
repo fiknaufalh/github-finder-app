@@ -41,14 +41,12 @@ class DetailViewModel : ViewModel() {
                     _userDetail.value = response.body()
                 } else {
                     _errorMsg.value = Event("Server Error, ${response.message()}")
-                    Log.d(TAG, "onResponseFail: ${response.message()} ")
                 }
             }
 
             override fun onFailure(call: Call<UserDetailResponse>, t: Throwable) {
                 _isLoading.value = false
                 _errorMsg.value = Event("Error, check your connection!")
-                Log.d(TAG, "onFailure: ${t.message}")
             }
         })
     }
@@ -73,19 +71,13 @@ class DetailViewModel : ViewModel() {
                     _followList.value = response.body()
                 } else {
                     _errorMsg.value = Event("Server Error, ${response.message()}")
-                    Log.d(TAG, "onFailResponse: ${response.message()} ")
                 }
             }
 
             override fun onFailure(call: Call<List<UserItem>>, t: Throwable) {
                 _isLoading.value = false
                 _errorMsg.value = Event("Error, check your connection!")
-                Log.d(TAG, "onFailure: ${t.message}")
             }
         })
-    }
-
-    companion object {
-        private const val TAG = "DetailViewModel"
     }
 }
