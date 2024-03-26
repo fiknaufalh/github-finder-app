@@ -1,12 +1,10 @@
 package com.fiknaufalh.githubfinder.ui.activities
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.fiknaufalh.githubfinder.R

@@ -13,14 +13,4 @@
     </style>
 
     <style name="Theme.GitHubFinder" parent="Base.Theme.GitHubFinder" />
-
-    <style name="SelectableItemTheme">
-        <item name="colorControlHighlight">@color/green</item>
-    </style>
-
-    <style name="SelectableItemBackground">
-        <item name="android:theme">@style/SelectableItemTheme</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-    </style>
-
 </resources>
