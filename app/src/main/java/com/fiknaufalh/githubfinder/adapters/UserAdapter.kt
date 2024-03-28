@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fiknaufalh.githubfinder.R
 import com.fiknaufalh.githubfinder.data.response.UserItem
-import com.fiknaufalh.githubfinder.databinding.ItemUserSearchBinding
+import com.fiknaufalh.githubfinder.databinding.ItemUserCardBinding
 
 class UserAdapter(
         private val listUser: List<UserItem>,
@@ -14,7 +14,7 @@ class UserAdapter(
     ): RecyclerView.Adapter<UserAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserAdapter.MyViewHolder {
-        val binding = ItemUserSearchBinding.
+        val binding = ItemUserCardBinding.
             inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding)
     }
@@ -26,7 +26,7 @@ class UserAdapter(
         holder.bind(user)
     }
 
-    inner class MyViewHolder(val binding: ItemUserSearchBinding): RecyclerView.ViewHolder(binding.root) {
+    inner class MyViewHolder(val binding: ItemUserCardBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(user: UserItem) {
 
             itemView.setOnClickListener {
