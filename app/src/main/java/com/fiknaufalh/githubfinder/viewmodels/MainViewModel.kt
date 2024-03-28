@@ -5,17 +5,21 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.fiknaufalh.githubfinder.BuildConfig
 import com.fiknaufalh.githubfinder.data.response.SearchResponse
 import com.fiknaufalh.githubfinder.data.retrofit.ApiConfig
 import com.fiknaufalh.githubfinder.database.FavoriteUser
 import com.fiknaufalh.githubfinder.helpers.Event
+import com.fiknaufalh.githubfinder.helpers.SettingPreferences
 import com.fiknaufalh.githubfinder.repository.MainRepository
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainViewModel(application: Application) : ViewModel() {
+class MainViewModel(application: Application, private val pref: SettingPreferences) : ViewModel() {
 
     private val mMainRepository: MainRepository = MainRepository(application)
 
@@ -76,6 +80,16 @@ class MainViewModel(application: Application) : ViewModel() {
 
     fun removeFavorite(favoriteUser: FavoriteUser) {
         mMainRepository.removeFavorite(favoriteUser)
+    }
+
+    fun getThemeSettings(): LiveData<Boolean> {
+        return pref.getThemeSetting().asLiveData()
+    }
+
+    fun saveThemeSetting(isDarkModeActive: Boolean) {
+        viewModelScope.launch {
+            pref.saveThemeSetting(isDarkModeActive)
+        }
     }
 
     companion object {

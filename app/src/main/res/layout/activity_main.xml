@@ -43,7 +43,19 @@
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/favorite_list_button" />
+            android:contentDescription="@string/favorite_list_icon" />
+
+        <ImageView
+            android:id="@+id/ivSwitchMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_dark_mode"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/switch_mode_icon" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/searchCard"

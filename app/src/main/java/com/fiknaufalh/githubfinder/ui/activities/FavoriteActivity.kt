@@ -73,7 +73,6 @@ class FavoriteActivity : AppCompatActivity() {
 
         } else {
             binding.rvFavs.visibility = View.GONE
-
         }
     }
 }

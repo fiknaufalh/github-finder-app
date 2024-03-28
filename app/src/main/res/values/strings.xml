@@ -21,8 +21,11 @@
     <string name="item_since">Member since 1st January 1970</string>
     <string name="splash_description">Welcome to GitHub Finder!</string>
     <string name="tab_text">%d %s</string>
-    <string name="favorite_list_button">Favorite List Button</string>
+    <string name="favorite_list_icon">Favorite List Icon</string>
     <string name="favorite_button">Favorite Button</string>
     <string name="fav_list_title">Favorite List</string>
     <string name="favorite_mark">Favorite Mark</string>
+    <string name="switch_mode_icon">Switch Mode Icon</string>
+    <string name="dark">dark</string>
+    <string name="light">light</string>
 </resources>
