@@ -4,9 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class UserDetailResponse(
 
-	@field:SerializedName("gists_url")
-	val gistsUrl: String? = null,
-
 	@field:SerializedName("repos_url")
 	val reposUrl: String? = null,
 
@@ -37,9 +34,6 @@ data class UserDetailResponse(
 	@field:SerializedName("updated_at")
 	val updatedAt: String? = null,
 
-	@field:SerializedName("site_admin")
-	val siteAdmin: Boolean? = null,
-
 	@field:SerializedName("company")
 	val company: String? = null,
 
@@ -48,9 +42,6 @@ data class UserDetailResponse(
 
 	@field:SerializedName("public_repos")
 	val publicRepos: Int? = null,
-
-	@field:SerializedName("gravatar_id")
-	val gravatarId: String? = null,
 
 	@field:SerializedName("email")
 	val email: Any? = null,
@@ -67,23 +58,14 @@ data class UserDetailResponse(
 	@field:SerializedName("followers_url")
 	val followersUrl: String? = null,
 
-	@field:SerializedName("public_gists")
-	val publicGists: Int? = null,
-
 	@field:SerializedName("url")
 	val url: String? = null,
-
-	@field:SerializedName("received_events_url")
-	val receivedEventsUrl: String? = null,
 
 	@field:SerializedName("followers")
 	val followers: Int? = null,
 
 	@field:SerializedName("avatar_url")
 	val avatarUrl: String? = null,
-
-	@field:SerializedName("events_url")
-	val eventsUrl: String? = null,
 
 	@field:SerializedName("html_url")
 	val htmlUrl: String? = null,
