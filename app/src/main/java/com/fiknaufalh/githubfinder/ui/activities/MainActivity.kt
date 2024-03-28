@@ -7,7 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,19 +23,28 @@ import com.fiknaufalh.githubfinder.data.response.SearchResponse
 import com.fiknaufalh.githubfinder.database.FavoriteUser
 import com.fiknaufalh.githubfinder.databinding.ActivityMainBinding
 import com.fiknaufalh.githubfinder.helpers.Event
+import com.fiknaufalh.githubfinder.helpers.SettingPreferences
 import com.fiknaufalh.githubfinder.helpers.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var appCompatDelegate: AppCompatDelegate
+    private lateinit var pref: SettingPreferences
+
     private var isSearched = false
+    private var isDataFetched = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        pref = SettingPreferences.getInstance(dataStore)
 
         supportActionBar?.hide()
 
@@ -63,10 +76,29 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
             startActivity(intent)
         }
+
+        binding.ivSwitchMode.setOnClickListener {
+            toggleTheme()
+        }
+
+        appCompatDelegate = AppCompatDelegate.create(this, null)
+
+        mainViewModel.getThemeSettings().observe(this) { isDarkMode ->
+            isDataFetched = true
+            if (isDarkMode) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                binding.ivSwitchMode.setImageResource(R.drawable.ic_light_mode)
+                binding.ivSwitchMode.tag = getString(R.string.dark)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                binding.ivSwitchMode.setImageResource(R.drawable.ic_dark_mode)
+                binding.ivSwitchMode.tag = getString(R.string.light)
+            }
+        }
     }
 
     private fun getViewModel(activity: MainActivity): MainViewModel {
-        val factory = ViewModelFactory.getInstance(activity.application)
+        val factory = ViewModelFactory.getInstance(activity.application, pref)
         return ViewModelProvider(activity, factory)[MainViewModel::class.java]
     }
 
@@ -98,6 +130,15 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.getFavoriteList().observe(this) {
             favoriteUsers -> adapter.updateFavoriteUsers(favoriteUsers)
         }
+    }
+
+    private fun toggleTheme() {
+        val isDarkTheme: Boolean = when (binding.ivSwitchMode.tag) {
+            resources.getString(R.string.dark) -> true
+            resources.getString(R.string.light) -> false
+            else -> false
+        }
+        mainViewModel.saveThemeSetting(!isDarkTheme)
     }
 
     private fun showLoading(isLoading: Boolean) {
@@ -132,23 +173,36 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(q: String?): Boolean {
-                if (q?.length!! >= 3) {
-                    binding.rvUsers.visibility = RecyclerView.VISIBLE
-                    mainViewModel.searchUsers(q.toString())
-                    isSearched = true
-                } else if (q.isEmpty()) {
-                    binding.rvUsers.visibility = RecyclerView.VISIBLE
-                    binding.tvTotalResult.text = resources.getString(R.string.search_me_text)
-                    mainViewModel.searchUsers("a")
-                    isSearched = false
-                } else {
-                    binding.rvUsers.visibility = RecyclerView.GONE
-                    binding.tvTotalResult.text = resources.getString(R.string.search_me_text)
-                    isSearched = false
+                if (!isDataFetched) {
+                    if (q?.length!! >= 3) {
+                        binding.rvUsers.visibility = RecyclerView.VISIBLE
+                        mainViewModel.searchUsers(q.toString())
+                        isSearched = true
+                    } else if (q.isEmpty()) {
+                        binding.rvUsers.visibility = RecyclerView.VISIBLE
+                        binding.tvTotalResult.text = resources.getString(R.string.search_me_text)
+                        mainViewModel.searchUsers("a")
+                        isSearched = false
+                    } else {
+                        binding.rvUsers.visibility = RecyclerView.GONE
+                        binding.tvTotalResult.text = resources.getString(R.string.search_me_text)
+                        isSearched = false
+                    }
                 }
 
+                isDataFetched = false
                 return false
             }
         })
+    }
+
+    /* To prevent screen flickering when switch theme */
+    override fun recreate() {
+        finish()
+        startActivity(intent)
+        overridePendingTransition(
+            R.anim.blink_animation,
+            R.anim.blink_animation
+        )
     }
 }

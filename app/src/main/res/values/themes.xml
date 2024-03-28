@@ -12,5 +12,8 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.GitHubFinder" parent="Base.Theme.GitHubFinder" />
+    <style name="FavoriteIcon" parent="Base.Theme.GitHubFinder" >
+        <item name="android:tint">@color/midnight</item>
+    </style>
+
 </resources>
