@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.fiknaufalh.githubfinder.R
 import com.fiknaufalh.githubfinder.adapters.UserAdapter
 import com.fiknaufalh.githubfinder.data.response.UserItem
+import com.fiknaufalh.githubfinder.database.FavoriteUser
 import com.fiknaufalh.githubfinder.databinding.FragmentFollowBinding
 import com.fiknaufalh.githubfinder.helpers.ViewModelFactory
 import com.fiknaufalh.githubfinder.ui.activities.DetailActivity
@@ -74,8 +75,22 @@ class FollowFragment : Fragment() {
                 val intent = Intent(context, DetailActivity::class.java)
                 intent.putExtra("q", it.login)
                 startActivity(intent)
+            },
+            onClickFav = {
+                val favoriteUser = FavoriteUser()
+                favoriteUser.username = it.login!!
+                favoriteUser.avatarUrl = it.avatarUrl
+                favoriteUser.htmlUtl = it.htmlUrl!!
+
+                if (detailViewModel.isFavorite(favoriteUser.username))
+                    detailViewModel.removeFavorite(favoriteUser)
+                else detailViewModel.addFavorite(favoriteUser)
             })
             binding.rvFollows.adapter = adapter
+
+            detailViewModel.getFavoriteList().observe(viewLifecycleOwner) {
+                favoriteUsers -> adapter.updateFavoriteUsers(favoriteUsers)
+            }
         } else {
             binding.emptyList.text = getString(R.string.empty_list)
         }

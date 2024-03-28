@@ -16,6 +16,7 @@ import com.fiknaufalh.githubfinder.R
 import com.fiknaufalh.githubfinder.adapters.UserAdapter
 import com.fiknaufalh.githubfinder.viewmodels.MainViewModel
 import com.fiknaufalh.githubfinder.data.response.SearchResponse
+import com.fiknaufalh.githubfinder.database.FavoriteUser
 import com.fiknaufalh.githubfinder.databinding.ActivityMainBinding
 import com.fiknaufalh.githubfinder.helpers.Event
 import com.fiknaufalh.githubfinder.helpers.ViewModelFactory
@@ -57,6 +58,11 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.errorMsg.observe(this) {
             msg -> setErrorMessage(msg)
         }
+
+        binding.ivFavList.setOnClickListener {
+            val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun getViewModel(activity: MainActivity): MainViewModel {
@@ -71,11 +77,26 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this@MainActivity, DetailActivity::class.java)
                 intent.putExtra(resources.getString(R.string.passing_query), it.login)
                 startActivity(intent)
+            },
+            onClickFav = {
+                val favoriteUser = FavoriteUser()
+                favoriteUser.username = it.login!!
+                favoriteUser.avatarUrl = it.avatarUrl
+                favoriteUser.htmlUtl = it.htmlUrl!!
+
+                if (mainViewModel.isFavorite(favoriteUser))
+                    mainViewModel.removeFavorite(favoriteUser)
+                else mainViewModel.addFavorite(favoriteUser)
             })
 
         binding.rvUsers.adapter = adapter
         if (isSearched) {
-            binding.tvTotalResult.text = resources.getString(R.string.search_result_text, users.totalCount, users.items.size)
+            binding.tvTotalResult.text =
+                resources.getString(R.string.search_result_text, users.totalCount, users.items.size)
+        }
+
+        mainViewModel.getFavoriteList().observe(this) {
+            favoriteUsers -> adapter.updateFavoriteUsers(favoriteUsers)
         }
     }
 

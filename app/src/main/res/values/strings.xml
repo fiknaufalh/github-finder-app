@@ -24,4 +24,5 @@
     <string name="favorite_list_button">Favorite List Button</string>
     <string name="favorite_button">Favorite Button</string>
     <string name="fav_list_title">Favorite List</string>
+    <string name="favorite_mark">Favorite Mark</string>
 </resources>
