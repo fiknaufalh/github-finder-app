@@ -10,9 +10,11 @@ import com.bumptech.glide.Glide
 import com.fiknaufalh.githubfinder.R
 import com.fiknaufalh.githubfinder.adapters.SectionPagerAdapter
 import com.fiknaufalh.githubfinder.data.response.UserDetailResponse
+import com.fiknaufalh.githubfinder.database.FavoriteUser
 import com.fiknaufalh.githubfinder.databinding.ActivityDetailBinding
 import com.fiknaufalh.githubfinder.helpers.DateConverter
 import com.fiknaufalh.githubfinder.helpers.Event
+import com.fiknaufalh.githubfinder.helpers.ViewModelFactory
 import com.fiknaufalh.githubfinder.viewmodels.DetailViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -30,11 +32,11 @@ class DetailActivity : AppCompatActivity() {
 
         val userName = intent.getStringExtra(resources.getString(R.string.passing_query))
 
-        detailViewModel = ViewModelProvider(
-            this, ViewModelProvider.NewInstanceFactory())[DetailViewModel::class.java]
+        detailViewModel = getViewModel(this@DetailActivity)
 
         detailViewModel.userDetail.observe(this) {
             setUserDetail(it)
+            setOnClickFab(it)
             binding.tvErrorDisplay.visibility = View.GONE
 
             val sectionPagerAdapter = SectionPagerAdapter(this, it.login!!)
@@ -51,6 +53,12 @@ class DetailActivity : AppCompatActivity() {
                 tab.text = resources.getString(R.string.tab_text, count, currentTab)
             }.attach()
             supportActionBar?.elevation = 0f
+
+            if (detailViewModel.isFavorite(it.login)) {
+                binding.fabFavorite?.setImageResource(R.drawable.ic_favorite_filled)
+            } else {
+                binding.fabFavorite?.setImageResource(R.drawable.ic_favorite_outline)
+            }
         }
 
         detailViewModel.isLoading.observe(this) {
@@ -66,6 +74,11 @@ class DetailActivity : AppCompatActivity() {
         binding.backTab.setOnClickListener {
             finish()
         }
+    }
+
+    private fun getViewModel(activity: DetailActivity): DetailViewModel {
+        val factory = ViewModelFactory.getInstance(activity.application)
+        return ViewModelProvider(activity, factory)[DetailViewModel::class.java]
     }
 
     private fun setUserDetail(detail: UserDetailResponse) {
@@ -94,6 +107,24 @@ class DetailActivity : AppCompatActivity() {
             .load(detail.avatarUrl)
             .placeholder(R.drawable.account_circle)
             .into(binding.ivUserProfile)
+    }
+
+    private fun setOnClickFab(user: UserDetailResponse) {
+        binding.fabFavorite?.setOnClickListener {
+            val favoriteUser = FavoriteUser()
+            favoriteUser.username = user.login!!
+            favoriteUser.avatarUrl = user.avatarUrl
+            favoriteUser.htmlUtl = user.htmlUrl!!
+
+            if (detailViewModel.isFavorite(favoriteUser.username)) {
+                detailViewModel.removeFavorite(favoriteUser)
+                binding.fabFavorite?.setImageResource(R.drawable.ic_favorite_outline)
+
+            } else {
+                detailViewModel.addFavorite(favoriteUser)
+                binding.fabFavorite?.setImageResource(R.drawable.ic_favorite_filled)
+            }
+        }
     }
 
     private fun showLoading(state: Boolean) {

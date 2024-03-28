@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.fiknaufalh.githubfinder.R
 import com.fiknaufalh.githubfinder.adapters.UserAdapter
 import com.fiknaufalh.githubfinder.data.response.UserItem
+import com.fiknaufalh.githubfinder.database.FavoriteUser
 import com.fiknaufalh.githubfinder.databinding.FragmentFollowBinding
+import com.fiknaufalh.githubfinder.helpers.ViewModelFactory
 import com.fiknaufalh.githubfinder.ui.activities.DetailActivity
 import com.fiknaufalh.githubfinder.viewmodels.DetailViewModel
 
@@ -42,8 +44,7 @@ class FollowFragment : Fragment() {
             username = it.getString(ARG_USERNAME)
         }
 
-        detailViewModel = ViewModelProvider(this,
-            ViewModelProvider.NewInstanceFactory())[DetailViewModel::class.java]
+        detailViewModel = getViewModel(this@FollowFragment)
 
         detailViewModel.followList.observe(viewLifecycleOwner) {
                 list -> setFollowListData(list)
@@ -62,6 +63,11 @@ class FollowFragment : Fragment() {
         detailViewModel.getFollow(type, username!!)
     }
 
+    private fun getViewModel(fragment: Fragment): DetailViewModel {
+        val factory = ViewModelFactory.getInstance(fragment.requireActivity().application)
+        return ViewModelProvider(fragment, factory)[DetailViewModel::class.java]
+    }
+
     private fun setFollowListData(list: List<UserItem>) {
         binding.tvTotalFollow.text = resources.getString(R.string.follow_result, list.size)
         if (list.isNotEmpty()) {
@@ -69,8 +75,22 @@ class FollowFragment : Fragment() {
                 val intent = Intent(context, DetailActivity::class.java)
                 intent.putExtra("q", it.login)
                 startActivity(intent)
+            },
+            onClickFav = {
+                val favoriteUser = FavoriteUser()
+                favoriteUser.username = it.login!!
+                favoriteUser.avatarUrl = it.avatarUrl
+                favoriteUser.htmlUtl = it.htmlUrl!!
+
+                if (detailViewModel.isFavorite(favoriteUser.username))
+                    detailViewModel.removeFavorite(favoriteUser)
+                else detailViewModel.addFavorite(favoriteUser)
             })
             binding.rvFollows.adapter = adapter
+
+            detailViewModel.getFavoriteList().observe(viewLifecycleOwner) {
+                favoriteUsers -> adapter.updateFavoriteUsers(favoriteUsers)
+            }
         } else {
             binding.emptyList.text = getString(R.string.empty_list)
         }
