@@ -13,6 +13,7 @@ import com.fiknaufalh.githubfinder.data.response.UserDetailResponse
 import com.fiknaufalh.githubfinder.databinding.ActivityDetailBinding
 import com.fiknaufalh.githubfinder.helpers.DateConverter
 import com.fiknaufalh.githubfinder.helpers.Event
+import com.fiknaufalh.githubfinder.helpers.ViewModelFactory
 import com.fiknaufalh.githubfinder.viewmodels.DetailViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -30,8 +31,7 @@ class DetailActivity : AppCompatActivity() {
 
         val userName = intent.getStringExtra(resources.getString(R.string.passing_query))
 
-        detailViewModel = ViewModelProvider(
-            this, ViewModelProvider.NewInstanceFactory())[DetailViewModel::class.java]
+        detailViewModel = getViewModel(this@DetailActivity)
 
         detailViewModel.userDetail.observe(this) {
             setUserDetail(it)
@@ -66,6 +66,11 @@ class DetailActivity : AppCompatActivity() {
         binding.backTab.setOnClickListener {
             finish()
         }
+    }
+
+    private fun getViewModel(activity: DetailActivity): DetailViewModel {
+        val factory = ViewModelFactory.getInstance(activity.application)
+        return ViewModelProvider(activity, factory)[DetailViewModel::class.java]
     }
 
     private fun setUserDetail(detail: UserDetailResponse) {

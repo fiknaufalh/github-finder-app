@@ -13,6 +13,7 @@ import com.fiknaufalh.githubfinder.R
 import com.fiknaufalh.githubfinder.adapters.UserAdapter
 import com.fiknaufalh.githubfinder.data.response.UserItem
 import com.fiknaufalh.githubfinder.databinding.FragmentFollowBinding
+import com.fiknaufalh.githubfinder.helpers.ViewModelFactory
 import com.fiknaufalh.githubfinder.ui.activities.DetailActivity
 import com.fiknaufalh.githubfinder.viewmodels.DetailViewModel
 
@@ -42,8 +43,7 @@ class FollowFragment : Fragment() {
             username = it.getString(ARG_USERNAME)
         }
 
-        detailViewModel = ViewModelProvider(this,
-            ViewModelProvider.NewInstanceFactory())[DetailViewModel::class.java]
+        detailViewModel = getViewModel(this@FollowFragment)
 
         detailViewModel.followList.observe(viewLifecycleOwner) {
                 list -> setFollowListData(list)
@@ -60,6 +60,11 @@ class FollowFragment : Fragment() {
 
         val type = if (position == 1) "followers" else "following"
         detailViewModel.getFollow(type, username!!)
+    }
+
+    private fun getViewModel(fragment: Fragment): DetailViewModel {
+        val factory = ViewModelFactory.getInstance(fragment.requireActivity().application)
+        return ViewModelProvider(fragment, factory)[DetailViewModel::class.java]
     }
 
     private fun setFollowListData(list: List<UserItem>) {

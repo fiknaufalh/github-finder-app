@@ -18,6 +18,7 @@ import com.fiknaufalh.githubfinder.viewmodels.MainViewModel
 import com.fiknaufalh.githubfinder.data.response.SearchResponse
 import com.fiknaufalh.githubfinder.databinding.ActivityMainBinding
 import com.fiknaufalh.githubfinder.helpers.Event
+import com.fiknaufalh.githubfinder.helpers.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
@@ -43,8 +44,7 @@ class MainActivity : AppCompatActivity() {
         val searchView = binding.searchUser
         initializeSearchView(searchManager, searchView)
 
-        mainViewModel = ViewModelProvider(this,
-            ViewModelProvider.NewInstanceFactory())[MainViewModel::class.java]
+        mainViewModel = getViewModel(this@MainActivity)
 
         mainViewModel.users.observe(this) {
             users -> setUserListData(users)
@@ -57,6 +57,11 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.errorMsg.observe(this) {
             msg -> setErrorMessage(msg)
         }
+    }
+
+    private fun getViewModel(activity: MainActivity): MainViewModel {
+        val factory = ViewModelFactory.getInstance(activity.application)
+        return ViewModelProvider(activity, factory)[MainViewModel::class.java]
     }
 
     private fun setUserListData(users: SearchResponse) {
